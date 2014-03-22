@@ -40,6 +40,11 @@ angular.module( 'OctoBinder', [] )
 			}
 		};
 
+		Binder.prototype.unbind = function () {
+			this.observer.close();
+
+		};
+
 		Binder.prototype.onModelChange = function ( changes ) {
 			var numAffectedItems = 0,
 				delta = { changes: changes },
