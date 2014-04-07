@@ -54,7 +54,21 @@ angular.module( 'OctoBinder', [] )
 				if (changes.name && 1) {
 					numAffectedItems++;
 				} else {
-					numAffectedItems += changes[i].addedCount + (changes[i].removed && changes[i].removed.length) || 0;
+					if ( changes[i].removed && changes[i].removed.length ) {
+						numAffectedItems += changes[i].removed.length;
+					}
+
+					if ( changes[i].addedCount ) {
+						numAffectedItems += changes[i].addedCount;
+					}
+
+					if ( changes[i].changed ) {
+						for ( var k in changes[i].changed ) {
+							if (changes[i].changed.hasOwnProperty(k)) {
+								numAffectedItems++;
+							}
+						}
+					}
 				}
 			}
 
@@ -123,7 +137,7 @@ angular.module( 'OctoBinder', [] )
 		};
 	}
 	]
-	);
+);
 
 angular.module( 'OctoBinder' )
 	.factory('obBinderTypes',
@@ -140,7 +154,7 @@ angular.module( 'OctoBinder' )
 		};
 	}
 	]
-	);
+);
 
 (function () {
 	var DeltaFactory = function () {
@@ -182,7 +196,7 @@ angular.module( 'OctoBinder' )
 
 		// Useful to shorten code, but should only be used for non-scalar models.
 		this.applyArrayChange = function ( binder, change ) {
-			var model = $parse( binder.model )( binder.scope );
+			var model = binder.scope[binder.model];
 
 			if ( change.added ) {
 				var firstChange = change.added.shift();
@@ -200,7 +214,7 @@ angular.module( 'OctoBinder' )
 
 			binder.ignoreNModelChanges += (change.removed && change.removed.length || 0) + change.addedCount;
 
-			$parse( binder.model ).assign( binder.scope, model );
+			binder.scope[binder.model] = model;
 
 			if ( !binder.scope.$$phase ) binder.scope.$apply();
 		};
@@ -293,7 +307,7 @@ angular.module( 'OctoBinder' )
 		};
 	}
 	]
-	);
+);
 
 angular.module( 'OctoBinder' )
 	.factory( 'obArrayChange', function () {
@@ -391,7 +405,7 @@ angular.module( 'OctoBinder' )
 			};
 		}
 		]
-	);
+);
 
 angular.module( 'OctoBinder' )
 	.value( 'obSyncEvents', {
